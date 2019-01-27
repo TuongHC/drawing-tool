@@ -32,6 +32,7 @@ export default class DrawingCore{
         this.canvas.height = this.options.height;
         element.appendChild(this.canvas);
         this.context = this.canvas.getContext("2d");
+        this.cPush();
         this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
         this.canvas.addEventListener('mousemove', this.onMousemove.bind(this));
         this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
@@ -114,14 +115,18 @@ export default class DrawingCore{
     }
 
     cPush() {
-        this.cStep++;
-        if (this.cStep < this.cPushArray.length) {
-             this.cPushArray.length = this.cStep; 
+        // add to history if there are something is drawn 
+        if(this.cPushArray[this.cStep] != this.canvas.toDataURL()){
+            this.cStep++;
+            if (this.cStep < this.cPushArray.length) {
+                this.cPushArray.length = this.cStep; 
+            } 
+            this.cPushArray.push(this.canvas.toDataURL());
+            document.title = this.cStep + ":" + this.cPushArray.length;
         }
-       
-        this.cPushArray.push(this.canvas.toDataURL());
-        document.title = this.cStep + ":" + this.cPushArray.length;
+        
     }
+
 
    cUndo() {       
         if (this.cStep > 0) {
