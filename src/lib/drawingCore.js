@@ -5,6 +5,7 @@ import RectTool from './rectTool';
 import LineArrowTool from './lineArrowTool';
 import LineTool from './lineTool';
 import EllipseTool from './ellipseTool';
+import TextTool from './textTool';
 
 export default class DrawingCore{
     constructor(elem, options){
@@ -18,7 +19,8 @@ export default class DrawingCore{
             rect: RectTool,
             line: LineTool,
             lineArrow: LineArrowTool,
-            ellipse: EllipseTool
+            ellipse: EllipseTool,
+            text: TextTool
         };
         this.backgroundImage = new Image();
         this.cPushArray = new Array();
@@ -143,6 +145,11 @@ export default class DrawingCore{
             {
                 id: 'ellipse',
                 title : 'Ellipse',
+                type : 'tool',
+            },
+            {
+                id: 'text',
+                title : 'Text',
                 type : 'tool',
             },
             {

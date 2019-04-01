@@ -9,27 +9,23 @@ export default class LineArrowTool{
         };    
 
         this.mousemove = (ev) => {          
-            if (!this.started) {
-                return;
+            if (this.started) {
+                this.x2 = ev._x;
+                this.y2 = ev._y;
+                this.context.clearRect(0, 0, core.canvas.width, core.canvas.height);        
+                this.context.beginPath();
+                this.context.moveTo(this.x1, this.y1);
+                this.context.lineTo(this.x2,   this.y2);
+                this.context.strokeStyle = core.strokeStyle;
+                this.context.lineWidth = core.lineWidth;
+                this.context.stroke();
+                // draw the starting arrowhead
+                var endRadians = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
+                endRadians += ((this.x2 > this.x1) ? 90 : -90) * Math.PI / 180;
+                this.drawArrowhead(this.context, this.x2, this.y2, endRadians, core.lineWidth, core.strokeStyle, core.strokeStyle);
+                this.context.closePath();
             }        
-            this.x2 = ev._x;
-            this.y2 = ev._y;
-
-            var startRadians = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
-            startRadians += ((this.x2 > this.x1) ? -90 : 90) * Math.PI / 180;
-
-            this.context.clearRect(0, 0, core.canvas.width, core.canvas.height);        
-            this.context.beginPath();
-            this.context.moveTo(this.x1, this.y1);
-            this.context.lineTo(this.x2,   this.y2);
-            this.context.strokeStyle = core.strokeStyle;
-            this.context.lineWidth = core.lineWidth;
-            this.context.stroke();
-             // draw the starting arrowhead
-             var endRadians = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
-             endRadians += ((this.x2 > this.x1) ? 90 : -90) * Math.PI / 180;
-            this.drawArrowhead(this.context, this.x2, this.y2, endRadians, core.lineWidth, core.strokeStyle, core.strokeStyle);
-            this.context.closePath();
+            
         };    
        
         this.mouseup = (ev) => {
