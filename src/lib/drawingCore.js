@@ -34,8 +34,6 @@ export default class DrawingCore{
         // set initialized to `true`
         this.createDOM(this.elem);    
         this. creareMenu();
-
-        // var toolSelect = document.getElementsByClassName("tool");
         var toolSelect = document.querySelectorAll('a')
         for(let i = 0; i < toolSelect.length; i ++) {            
             toolSelect[i].addEventListener('click', (e) => {
@@ -45,7 +43,6 @@ export default class DrawingCore{
                 if(type == 'tool'){                    
                     if (this.tools[id]) {
                         this.tool = new this.tools[id](this);
-                        //this.tool_select.value = this.tool_default;
                     }
                 }    
                 else if (type == 'color'){
