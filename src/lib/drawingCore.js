@@ -6,7 +6,6 @@ import LineArrowTool from './lineArrowTool';
 import LineTool from './lineTool';
 import EllipseTool from './ellipseTool';
 import TextTool from './textTool';
-
 export default class DrawingCore{
     constructor(elem, options){
         this.elem = elem;
@@ -20,7 +19,7 @@ export default class DrawingCore{
             line: LineTool,
             lineArrow: LineArrowTool,
             ellipse: EllipseTool,
-            text: TextTool
+            text: TextTool,
         };
         this.backgroundImage = new Image();
         this.cPushArray = new Array();
@@ -33,33 +32,33 @@ export default class DrawingCore{
     init() { 
         // set initialized to `true`
         this.createDOM(this.elem);    
-        this. creareMenu();
+        this.creareMenu();
+        this.handleMove()
         var toolSelect = document.querySelectorAll('a')
-        for(let i = 0; i < toolSelect.length; i ++) {            
-            toolSelect[i].addEventListener('click', (e) => {
-                e.preventDefault ? e.preventDefault() : e.returnValue = false
-                let id = e.toElement.id;
-                let type = e.toElement.dataset.type;
-                if(type == 'tool'){                    
-                    if (this.tools[id]) {
-                        this.tool = new this.tools[id](this);
-                    }
-                }    
-                else if (type == 'color'){
+        toolSelect.forEach((item)=>{
+            let id = item.id;
+            let type = item.dataset.type;
+            if(type == 'tool'){
+                item.addEventListener('click', (e) => {
+                    this.tool = new this.tools[id](this);
+                });
+            }
+            else if (type == 'color') {
+                item.addEventListener('click', (e) => {
                     this.strokeStyle = id;
-                }
-                else if (type == 'control'){                    
+                });
+            }
+            else if (type == 'control') {
+                item.addEventListener('click', (e) => {
                     this.handleUndoRedo(id)
-                }
-            });
-        }
+                });
+            }
+           
+        })
        
     }
-    // get fullname of the user
 
     createDOM(element) {
-        this.undo = document.getElementById('undo');
-        this.redo = document.getElementById('redo');
         this.canvaso = document.createElement('canvas');
         this.canvaso.id = "imageView";
         this.canvaso.width = this.options.width;
@@ -169,11 +168,11 @@ export default class DrawingCore{
                 title : 'Redo',                
                 type : 'control',
             }
-            
-            
+           
         ];    
         var ul = document.createElement('ul');   
-        ul.className = 'drawing-menu';     
+        ul.className = 'drawing-menu';  
+        ul.draggable = true;   
         this.elem.parentNode.appendChild(ul);        
         items.forEach(function (item) {
             var li = document.createElement('li');
@@ -182,6 +181,9 @@ export default class DrawingCore{
             li.appendChild(a);
             a.innerHTML = item.title;
             a.className = item.type;
+            if(item.draggable){
+                a.draggable = true;
+            }
             a.dataset.type = item.type;
             a.id = item.id;
             ul.appendChild(li);
@@ -233,6 +235,33 @@ export default class DrawingCore{
         else{
             this.cRedo();
         }
+    }
+
+    handleMove(){
+        let menu = document.querySelectorAll('.drawing-menu');
+        menu[0].addEventListener('dragover', (e) => {
+            this.lastMenuX = e.x;
+            this.lastMenuY = e.y;
+            menu[0].style.top = this.lastMenuY - 10;
+            let left = this.lastMenuX - menu[0].clientWidth + 20;
+            menu[0].style.left = left;
+            console.log(left);
+                
+
+        });
+        
+        // item.addEventListener('mousedown', (e) => {
+        //     this.moveMenu = true;
+        // });
+        // item.addEventListener('mouseup', (e) => {
+        //     if (this.moveMenu) {
+        //         this.moveMenu = false;
+        //       }
+        // });
+        // item.addEventListener('mouseleave', (e) => {
+        //     // console.log(e);
+        //     this.moveMenu = false;
+        // });
     }
     
 }

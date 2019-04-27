@@ -13,9 +13,7 @@ html,body{
   height: 80vh;
 }
 
-// plugin level css
-
-#app { 
+#drawingTool { 
   position: relative;
   width: 100%;
   height: 100%;  
@@ -35,28 +33,31 @@ html,body{
     a {
       cursor: pointer;
       padding: 5px 10px;
+      user-select: none; 
+      -moz-user-select: none; 
+     -webkit-user-select: none;
     }
   }
 }
+
 #imageView { 
   border: 0 
 }
+
 #imageTemp { 
   position: absolute;
   top: 0; 
   left: 0;
  } 
+
 .insertText {
   position: absolute;
   z-index: 10;
   padding: 3px; 
-}
-textarea{  
   background: none;
   border: none;
   outline: none;
   resize: none;
-  padding: 0px;
   margin: 0px;
   font: 16px Helvetica;
   overflow: hidden;
@@ -65,20 +66,19 @@ textarea{
   line-height: 14px;
 }
 
-#spanTextCalc
-{
+#spanTextCalc {
     position: absolute;
     visibility: hidden;
     height: auto;
     width: auto;
     white-space: nowrap; /* Thanks to Herb Caudill comment */
 }
-li.liText {
+
+.liText {
   display: inline;
   position: absolute;
   visibility: hidden;
   height: auto;
   width: auto;
   white-space: nowrap;
-    
 }

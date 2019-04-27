@@ -1,9 +1,3 @@
-// import `.scss` files
-import './scss/styles.scss';
-
-// import UserList class
+import './scss/drawingTool.scss';
 import DrawingTool from './lib/drawingTool';
-
-// export default UserList class
-// I used `defaultExport` to state that variable name doesn't matter
 export default DrawingTool;
