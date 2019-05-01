@@ -10,18 +10,19 @@ html,body{
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 80vh;
+  height: 100vh;
 }
 
 #drawingTool { 
   position: relative;
   width: 100%;
-  height: 100%;  
+  height: 100vh;  
   overflow: hidden;
  }
  
 .drawing-menu {
   padding: 0;
+  background: white;
   position: absolute;
   margin: 0;
   top: 0;

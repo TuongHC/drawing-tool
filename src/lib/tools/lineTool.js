@@ -1,4 +1,4 @@
-export default class LineTool{
+export class LineTool{
     constructor(core){ 
         this.context = core.context;        
         this.started = core.started;
@@ -10,17 +10,17 @@ export default class LineTool{
         };    
 
         this.mousemove = (ev) => {          
-            if (!this.started) {
-                return;
+            if (this.started) {
+                this.context.clearRect(0, 0, core.canvas.width, core.canvas.height);        
+                this.context.beginPath();
+                this.context.moveTo(this.x0, this.y0);
+                this.context.lineTo(ev._x,   ev._y);
+                this.context.strokeStyle = core.strokeStyle;
+                this.context.lineWidth = core.lineWidth;
+                this.context.stroke();
+                this.context.closePath();
             }        
-            this.context.clearRect(0, 0, core.canvas.width, core.canvas.height);        
-            this.context.beginPath();
-            this.context.moveTo(this.x0, this.y0);
-            this.context.lineTo(ev._x,   ev._y);
-            this.context.strokeStyle = core.strokeStyle;
-            this.context.lineWidth = core.lineWidth;
-            this.context.stroke();
-            this.context.closePath();
+            
         };    
        
         this.mouseup = (ev) => {

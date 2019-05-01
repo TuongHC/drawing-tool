@@ -1,4 +1,4 @@
-export default class LineArrowTool{
+export class LineArrowTool{
     constructor(core){ 
         this.context = core.context;        
         this.started = core.started;

@@ -1,4 +1,4 @@
-export default class Erase {
+export class Erase {
     constructor(core) {
         this.context = core.context;
         this.started = core.started;

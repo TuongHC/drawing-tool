@@ -1,40 +1,45 @@
-// import dependencies
-// return UserList class
-import PencilTool from './pencilTool';
-import RectTool from './rectTool';
-import LineArrowTool from './lineArrowTool';
-import LineTool from './lineTool';
-import EllipseTool from './ellipseTool';
-import TextTool from './textTool';
+// import PencilTool from '../tools/pencilTool';
+// import RectTool from '../tools/rectTool';
+// import LineArrowTool from '../tools/lineArrowTool';
+// import LineTool from '../tools/lineTool';
+// import EllipseTool from '../tools/ellipseTool';
+// import TextTool from '../tools/textTool';
+import {
+    PencilTool,
+    MarkerTool,
+    RectTool,
+    LineArrowTool,
+    LineTool,
+    EllipseTool,
+    TextTool
+} from '../tools';
+import Menu from '../menu/menu'
 export default class DrawingCore{
     constructor(elem, options){
         this.elem = elem;
         this.options = options;
-        this.initialized = false;
         this.started = false;
-        this.tool_default = 'rect'
+        this.tool_default = 'rect';
         this.tools = {
             pencil: PencilTool,
+            marker: MarkerTool,
             rect: RectTool,
             line: LineTool,
             lineArrow: LineArrowTool,
             ellipse: EllipseTool,
             text: TextTool,
         };
-        this.backgroundImage = new Image();
         this.cPushArray = new Array();
         this.cStep = -1;
         this.strokeStyle = 'red';
         this.lineWidth = 5;
         this.init();        
     }
-    // initialize plugin
-    init() { 
-        // set initialized to `true`
-        this.createDOM(this.elem);    
-        this.creareMenu();
-        this.handleMove()
-        var toolSelect = document.querySelectorAll('a')
+    init() {
+        this.createCanvas(); 
+        const menu = new Menu(this.elem);
+        menu.creareMenu();
+        var toolSelect = document.querySelectorAll('.toolSelect a')
         toolSelect.forEach((item)=>{
             let id = item.id;
             let type = item.dataset.type;
@@ -58,34 +63,40 @@ export default class DrawingCore{
        
     }
 
-    createDOM(element) {
+    createCanvas() {
         this.canvaso = document.createElement('canvas');
         this.canvaso.id = "imageView";
-        this.canvaso.width = this.options.width;
-        this.canvaso.height = this.options.height;
-        element.appendChild(this.canvaso);
+        this.canvaso.width = this.options.width ? this.options.width : window.innerWidth;
+        this.canvaso.height = this.options.height ? this.options.height : window.innerHeight;
+        this.elem.appendChild(this.canvaso);
         this.contexto = this.canvaso.getContext("2d");
-
         this.canvas = document.createElement('canvas');    
         this.canvas.id = 'imageTemp';
-        this.canvas.width  = this.options.width;
-        this.canvas.height = this.options.width;
-
-        element.appendChild(this.canvas);
+        this.canvas.width  = this.options.width ? this.options.width : window.innerWidth;
+        this.canvas.height = this.options.height ? this.options.height : window.innerHeight;
+        
+        this.elem.appendChild(this.canvas);
         this.context = this.canvas.getContext("2d");
-
-       
+        if(this.options.bgImage) {
+            this.bgImage = new Image();
+            this.bgImage.src = this.options.bgImage;
+            this.bgImage.onload = () => {
+                this.contexto.drawImage(this.bgImage, 0, 0);
+                this.cPush();
+            }
+        }
+        else {
+            this.cPush();
+        }
+        
         if (this.tools[this.tool_default]) {
             this.tool = new this.tools[this.tool_default](this);           
-          }
-
+        }
         this.canvas.addEventListener('mousedown', this.ev_canvas.bind(this));
         this.canvas.addEventListener('mousemove', this.ev_canvas.bind(this));
         this.canvas.addEventListener('mouseup', this.ev_canvas.bind(this));
         this.canvas.addEventListener('mouseleave', this.ev_canvas.bind(this));
-        this.cPush();    
-        this.initialized = true;       
-       
+       // this.cPush();    
     } 
 
     ev_canvas (ev) {
@@ -96,7 +107,6 @@ export default class DrawingCore{
           ev._x = ev.offsetX;
           ev._y = ev.offsetY;
         }
-    
         // Call the event handler of the tool.
         var func = this.tool[ev.type];
         if (func) {
@@ -108,89 +118,16 @@ export default class DrawingCore{
             }
           func(ev);
         }
-      }
+    }
 
-      img_update () {
+    img_update () {
         this.contexto.drawImage(this.canvas, 0, 0);
         this.cPush();
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
        
-      }
-      creareMenu(){           
-        var items = [
-            {
-                id: 'pencil',
-                title : 'Pencil',
-                type : 'tool',                
-            },
-            {
-                id: 'line',
-                title : 'Line',
-                type : 'tool',                
-            },
-            {
-                id: 'lineArrow',
-                title : 'Line Arrow',
-                type : 'tool',
-            },
-            {
-                id: 'rect',
-                title : 'Rect',
-                type : 'tool',
-            },
-            {
-                id: 'ellipse',
-                title : 'Ellipse',
-                type : 'tool',
-            },
-            {
-                id: 'text',
-                title : 'Text',
-                type : 'tool',
-            },
-            {
-                id : 'red',
-                title : 'Red',
-                type : 'color',
-            },
-            {
-                id : 'blue',
-                title : 'Blue',                
-                type : 'color',
-            },
-            {
-                id : 'undo',
-                title : 'Undo',
-                type : 'control',
-            },
-            {
-                id : 'redo',
-                title : 'Redo',                
-                type : 'control',
-            }
-           
-        ];    
-        var ul = document.createElement('ul');   
-        ul.className = 'drawing-menu';  
-        ul.draggable = true;   
-        this.elem.parentNode.appendChild(ul);        
-        items.forEach(function (item) {
-            var li = document.createElement('li');
-            li.className = 'toolSelect';
-            var a = document.createElement('a');
-            li.appendChild(a);
-            a.innerHTML = item.title;
-            a.className = item.type;
-            if(item.draggable){
-                a.draggable = true;
-            }
-            a.dataset.type = item.type;
-            a.id = item.id;
-            ul.appendChild(li);
-        }); 
-      }
-
-      cPush() {
+    }
+    
+    cPush() {
         // add to history if there are something is drawn         
         if(this.cPushArray[this.cStep] != this.canvaso.toDataURL()){
             this.cStep++;
@@ -202,7 +139,8 @@ export default class DrawingCore{
         }        
     }
 
-   cUndo() {       
+    cUndo() {   
+        debugger    
         if (this.cStep > 0) {
             this.cStep--;
             var canvasPic = new Image();
@@ -228,6 +166,7 @@ export default class DrawingCore{
             //document.title = cStep + ":" + cPushArray.length;
         }
     }
+
     handleUndoRedo(id){
         if(id == 'undo'){
             this.cUndo();
@@ -235,33 +174,6 @@ export default class DrawingCore{
         else{
             this.cRedo();
         }
-    }
-
-    handleMove(){
-        let menu = document.querySelectorAll('.drawing-menu');
-        menu[0].addEventListener('dragover', (e) => {
-            this.lastMenuX = e.x;
-            this.lastMenuY = e.y;
-            menu[0].style.top = this.lastMenuY - 10;
-            let left = this.lastMenuX - menu[0].clientWidth + 20;
-            menu[0].style.left = left;
-            console.log(left);
-                
-
-        });
-        
-        // item.addEventListener('mousedown', (e) => {
-        //     this.moveMenu = true;
-        // });
-        // item.addEventListener('mouseup', (e) => {
-        //     if (this.moveMenu) {
-        //         this.moveMenu = false;
-        //       }
-        // });
-        // item.addEventListener('mouseleave', (e) => {
-        //     // console.log(e);
-        //     this.moveMenu = false;
-        // });
     }
     
 }

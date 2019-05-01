@@ -1,5 +1,5 @@
 const path = require('path');
-const webpack = require('webpack');
+// const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const config = require('config');
 
@@ -33,6 +33,12 @@ module.exports = {
             {
                 test: /\.scss$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+            },
+            {
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                use: [{
+                    loader: 'file-loader'
+                }]
             }
         ]
     },

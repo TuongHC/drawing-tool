@@ -1,4 +1,4 @@
-export default class PencilTool{
+export class PencilTool{
     constructor(core){ 
         this.context = core.context;        
         this.started = core.started;
@@ -22,10 +22,7 @@ export default class PencilTool{
     
         // This is called when you release the mouse button.
         this.mouseup = (ev) => {
-          if (this.started) {
-            this.mousemove(ev);
             this.started = false;
-          }
         };
 
         this.mouseleave = (ev) => {

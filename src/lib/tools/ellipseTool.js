@@ -1,4 +1,4 @@
-export default class EllipseTool {
+export class EllipseTool {
     constructor(core) {
         this.context = core.context;
         this.started = core.started;

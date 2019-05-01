@@ -1,4 +1,4 @@
-export default class TextTool{
+export class TextTool{
     constructor(core){ 
         this.context = core.context;        
         this.started = core.started;
