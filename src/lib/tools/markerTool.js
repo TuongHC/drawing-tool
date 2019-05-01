@@ -2,34 +2,37 @@ export class MarkerTool{
   constructor(core){ 
       this.context = core.context;        
       this.started = core.started;
-      this.mousedown = (ev) => {
-          this.context.beginPath();
-          this.context.moveTo(ev._x, ev._y);
+      this.points = [];
+      this.mousedown = (e) => {
           this.context.globalAlpha = 0.4;
+          this.points.push({ x: e.clientX, y: e.clientY });
           this.started = true;
       };
   
-      // This function is called every time you move the mouse. Obviously, it only 
-      // draws if the tool.started state is set to true (when you are holding down 
-      // the mouse button).
-      this.mousemove = (ev) => {
+      this.mousemove = (e) => {
         if (this.started) {
-          this.context.clearRect(0, 0, core.canvas.width, core.canvas.height); 
+          this.points.push({ x: e.clientX, y: e.clientY });
+          this.context.beginPath();
+          this.context.lineWidth = 10;
           this.context.strokeStyle = core.strokeStyle;
-          this.context.lineWidth = core.lineWidth;
-          this.context.lineTo(ev._x, ev._y);
+          if(this.points.length > 1) {
+            this.context.moveTo(this.points[this.points.length-2].x, this.points[this.points.length-2].y);
+            this.context.lineTo(this.points[this.points.length-1].x, this.points[this.points.length-1].y);
+          }
           this.context.stroke();
+          this.context.closePath();
         }
       };
   
-      // This is called when you release the mouse button.
-      this.mouseup = (ev) => {
+      this.mouseup = (e) => {
         this.context.globalAlpha = 1;
         this.started = false;
+        this.points.length = 0;
       };
 
-      this.mouseleave = (ev) => {
+      this.mouseleave = (e) => {
         this.started = false;
+        this.points.length = 0;
       };
   } 
   

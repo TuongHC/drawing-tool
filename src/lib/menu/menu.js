@@ -22,6 +22,13 @@ export default class Menu {
 
         },
         {
+          id: 'marker',
+          title: 'Marker',
+          type: 'tool',        
+          icon: '<span class="icon-pen"></span>',
+
+        },
+        {
             id: 'line',
             title: 'Line',
             type: 'tool',      
@@ -55,12 +62,13 @@ export default class Menu {
             id: 'red',
             title: 'Red',
             type: 'color',
+            icon: '<span class="icon-color"><span class="path1"></span><span class="path2"></span></span>'
         },
         {
             id: 'blue',
             title: 'Blue',                
             type: 'color',
-            icon: '<span class="icon-color"><span class="path1"></span><span class="path2"></span></span>'
+            icon: '<input type="color" id="myColor">'
         },
         {
             id: 'undo',
@@ -83,7 +91,7 @@ export default class Menu {
     ];    
     this.ul = document.createElement('ul');   
     this.ul.className = 'drawing-menu';  
-    this.ul.draggable = true;   
+      
     this.elem.appendChild(this.ul);        
     arrMenu.forEach((item) => {
         let li = document.createElement('li');
@@ -120,6 +128,7 @@ export default class Menu {
     }
 
     if (e.target.id === 'move' || e.target.id === 'icon-move') {
+      this.ul.draggable = true; 
       this.active = true;
     }
   }
@@ -127,6 +136,7 @@ export default class Menu {
   dragEnd(e) {
     this.initialX = this.currentX;
     this.initialY = this.currentY;
+    this.ul.draggable = false; 
     this.active = false;
   }
 

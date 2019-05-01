@@ -39,13 +39,25 @@ export default class DrawingCore{
         this.createCanvas(); 
         const menu = new Menu(this.elem);
         menu.creareMenu();
-        var toolSelect = document.querySelectorAll('.toolSelect a')
+        let toolSelect = document.querySelectorAll('.toolSelect a')
         toolSelect.forEach((item)=>{
             let id = item.id;
             let type = item.dataset.type;
             if(type == 'tool'){
                 item.addEventListener('click', (e) => {
-                    this.tool = new this.tools[id](this);
+                    toolSelect.forEach( (el) => {
+                        if(!(el.className == e.currentTarget.className)) {
+                                el.classList.remove("active");
+                        }
+                    });
+                    if(e.currentTarget.classList.contains('active')) {
+                        e.currentTarget.classList.remove('active');
+                        this.tool = null;
+                    }
+                    else {
+                        e.currentTarget.classList.add('active');
+                        this.tool = new this.tools[id](this);
+                    }
                 });
             }
             else if (type == 'color') {
@@ -58,10 +70,10 @@ export default class DrawingCore{
                     this.handleUndoRedo(id)
                 });
             }
-           
         })
-       
     }
+
+
 
     createCanvas() {
         this.canvaso = document.createElement('canvas');
@@ -74,7 +86,6 @@ export default class DrawingCore{
         this.canvas.id = 'imageTemp';
         this.canvas.width  = this.options.width ? this.options.width : window.innerWidth;
         this.canvas.height = this.options.height ? this.options.height : window.innerHeight;
-        
         this.elem.appendChild(this.canvas);
         this.context = this.canvas.getContext("2d");
         if(this.options.bgImage) {
@@ -108,7 +119,7 @@ export default class DrawingCore{
           ev._y = ev.offsetY;
         }
         // Call the event handler of the tool.
-        var func = this.tool[ev.type];
+        var func = this.tool ? this.tool[ev.type] : null;
         if (func) {
             if(ev.type =='mouseup'){                
                 this.img_update();
@@ -140,7 +151,6 @@ export default class DrawingCore{
     }
 
     cUndo() {   
-        debugger    
         if (this.cStep > 0) {
             this.cStep--;
             var canvasPic = new Image();

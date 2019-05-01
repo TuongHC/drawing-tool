@@ -3,6 +3,7 @@ export class TextTool{
         this.context = core.context;        
         this.started = core.started;
         this.textarea = null;
+        this.removeTextarea(core);
         this.mousedown = (e) => {
             this.started = true;
             this.x0 = e._x;
@@ -11,8 +12,7 @@ export class TextTool{
             if(this.textValue){
                 var lineHeight = 14;               
                 this.context.clearRect(0,0,core.canvas.width, core.canvas.height);
-               // this.context.fillText(this.textValue, this.lastX, this.lastY);
-                this.drawText(this.context, this.textValue, this.lastX + 4, this.lastY + 16, lineHeight);
+                this.drawText(this.context, this.textValue, this.lastX + 4, this.lastY + 16, lineHeight, core.strokeStyle);
                 core.img_update();
                 this.textValue = "";
             }            
@@ -21,12 +21,15 @@ export class TextTool{
             if(insertText){
                 insertText.parentNode.removeChild(insertText);
             }
-           
+
             this.textarea = document.createElement('textarea');
             this.textarea.className = 'insertText';
             this.textarea.id = 'insertText'; 
-            this.textarea.rows = 2;                
+            this.textarea.rows = 2;         
+            this.textarea.style.color = core.strokeStyle;    
+            this.textarea.spellcheck = false;   
             document.body.appendChild(this.textarea);
+            this.textarea.focus();
             this.spanTextCalc = document.createElement('span');
             this.spanTextCalc.id = 'spanTextCalc';
             document.body.appendChild(this.spanTextCalc);
@@ -77,26 +80,50 @@ export class TextTool{
             this.textarea.style.left = e.clientX + 'px';
             
         };    
-
-        this.mousemove = (e) => {          
-            
-        };    
-       
-        this.mouseup = (e) => {
-          
-        };
-
-        this.mouseleave = (e) => {
-        };
     } 
 
-    drawText(context, text, x, y, lineHeight) {
+    drawText(context, text, x, y, lineHeight, color) {
       var txt = text;     
       var lineheight = lineHeight;
       var lines = txt.split('\n');
       context.font = '16px Helvetica'; // add font 
+      context.fillStyle = color;
       for (var i = 0; i<lines.length; i++)
       context.fillText(lines[i], x, y + (i*lineheight) );
+    }
+
+    removeTextarea(core){
+      let toolSelect = document.querySelectorAll('.toolSelect a')
+        toolSelect.forEach((item) => {
+          item.addEventListener('click', (e) => {
+            let insertText = document.getElementById('insertText');
+            let className = e.currentTarget.className;
+            if(className === 'control' || className === 'move'){
+              return;
+            }
+            else if(className === 'color'){
+              if(insertText){
+                insertText.style.color = core.strokeStyle;
+              }
+              return;
+            }
+            else {
+             // let insertText = document.getElementById('insertText');
+              if(insertText){
+                if(insertText.value){
+                  var lineHeight = 14;               
+                  this.context.clearRect(0,0, core.canvas.width, core.canvas.height);
+                  let y = insertText.offsetTop;
+                  let x = insertText.offsetLeft;
+                  this.drawText(this.context, insertText.value, x + 4, y + 16, lineHeight, core.strokeStyle);
+                  core.img_update();
+                  insertText.value = "";
+                }
+                insertText.parentNode.removeChild(insertText);
+              }
+            }
+          });
+        })
     }
     
 }
