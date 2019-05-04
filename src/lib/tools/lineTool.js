@@ -2,7 +2,7 @@ export class LineTool{
     constructor(core){ 
         this.context = core.context;        
         this.started = core.started;
-
+        debugger
         this.mousedown = (ev) => {
             this.started = true;
             this.x0 = ev._x;

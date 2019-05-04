@@ -1,9 +1,4 @@
-// import PencilTool from '../tools/pencilTool';
-// import RectTool from '../tools/rectTool';
-// import LineArrowTool from '../tools/lineArrowTool';
-// import LineTool from '../tools/lineTool';
-// import EllipseTool from '../tools/ellipseTool';
-// import TextTool from '../tools/textTool';
+import Croppr from '../croppr';
 import {
     PencilTool,
     MarkerTool,
@@ -11,15 +6,15 @@ import {
     LineArrowTool,
     LineTool,
     EllipseTool,
-    TextTool
+    TextTool,
+    CropperTool,
 } from '../tools';
 import Menu from '../menu/menu'
-export default class DrawingCore{
-    constructor(elem, options){
+export default class DrawingCore {
+    constructor(elem, options) {
         this.elem = elem;
         this.options = options;
         this.started = false;
-        this.tool_default = 'rect';
         this.tools = {
             pencil: PencilTool,
             marker: MarkerTool,
@@ -28,52 +23,77 @@ export default class DrawingCore{
             lineArrow: LineArrowTool,
             ellipse: EllipseTool,
             text: TextTool,
+            cropper: CropperTool,
         };
+        this.tool_default = 'cropper';
         this.cPushArray = new Array();
         this.cStep = -1;
-        this.strokeStyle = 'red';
-        this.lineWidth = 5;
+        this.strokeStyle = '#ff0000';
+        this.lineWidth = 4;
+        this.canvasPic = new Image();
         this.init();        
     }
     init() {
         this.createCanvas(); 
         const menu = new Menu(this.elem);
         menu.creareMenu();
-        let toolSelect = document.querySelectorAll('.toolSelect a')
+        this.handleMenuClick();
+        this.handleColorChange();
+        
+    }
+
+    createDropArea() {
+        this.imgcroper = document.createElement('img');
+        this.imgcroper.src = this.canvaso.toDataURL();
+        document.body.appendChild(this.imgcroper)
+        const croppr = new Croppr(this.imgcroper, {
+            onInitialize: (instance) => { console.log(instance); },
+            onCropStart: (data) => { console.log('start', data); },
+            onCropEnd: (data) => { console.log('end', data); },
+            onCropMove: (data) => { console.log('move', data); }
+        });
+    }
+
+    handleMenuClick(){
+        let toolSelect = document.querySelectorAll('.toolSelect a');
         toolSelect.forEach((item)=>{
             let id = item.id;
             let type = item.dataset.type;
-            if(type == 'tool'){
-                item.addEventListener('click', (e) => {
-                    toolSelect.forEach( (el) => {
-                        if(!(el.className == e.currentTarget.className)) {
-                                el.classList.remove("active");
+            switch (type) {
+                case 'tool':
+                    item.addEventListener('click', (e) => {
+                        toolSelect.forEach( (el) => {
+                            if(!(el.className == e.currentTarget.className)) {
+                                    el.classList.remove("active");
+                            }
+                        });
+                        if(e.currentTarget.classList.contains('active')) {
+                            e.currentTarget.classList.remove('active');
+                            this.tool = null;
+                        }
+                        else {
+                            e.currentTarget.classList.add('active');
+                            this.tool = new this.tools[id](this);
                         }
                     });
-                    if(e.currentTarget.classList.contains('active')) {
-                        e.currentTarget.classList.remove('active');
-                        this.tool = null;
-                    }
-                    else {
-                        e.currentTarget.classList.add('active');
-                        this.tool = new this.tools[id](this);
-                    }
-                });
+                    break;
+                case 'control':    
+                    item.addEventListener('click', (e) => {
+                        this.handleUndoRedo(id)
+                    });
+                    break;    
+                default:
+                    break;
             }
-            else if (type == 'color') {
-                item.addEventListener('click', (e) => {
-                    this.strokeStyle = id;
-                });
-            }
-            else if (type == 'control') {
-                item.addEventListener('click', (e) => {
-                    this.handleUndoRedo(id)
-                });
-            }
-        })
+        });
     }
 
-
+    handleColorChange() {
+        let color = document.getElementById('inputColor');
+        color.addEventListener('change',  (e) => {
+            this.strokeStyle = e.target.value;
+        });
+    }
 
     createCanvas() {
         this.canvaso = document.createElement('canvas');
@@ -103,14 +123,13 @@ export default class DrawingCore{
         if (this.tools[this.tool_default]) {
             this.tool = new this.tools[this.tool_default](this);           
         }
-        this.canvas.addEventListener('mousedown', this.ev_canvas.bind(this));
-        this.canvas.addEventListener('mousemove', this.ev_canvas.bind(this));
-        this.canvas.addEventListener('mouseup', this.ev_canvas.bind(this));
-        this.canvas.addEventListener('mouseleave', this.ev_canvas.bind(this));
-       // this.cPush();    
+        this.canvas.addEventListener('mousedown', this.canvasEvent.bind(this));
+        this.canvas.addEventListener('mousemove', this.canvasEvent.bind(this));
+        this.canvas.addEventListener('mouseup', this.canvasEvent.bind(this));
+        this.canvas.addEventListener('mouseleave', this.canvasEvent.bind(this));
     } 
 
-    ev_canvas (ev) {
+    canvasEvent (ev) {
         if (ev.layerX || ev.layerX == 0) { // Firefox
           ev._x = ev.layerX;
           ev._y = ev.layerY;
@@ -118,11 +137,14 @@ export default class DrawingCore{
           ev._x = ev.offsetX;
           ev._y = ev.offsetY;
         }
-        // Call the event handler of the tool.
         var func = this.tool ? this.tool[ev.type] : null;
         if (func) {
-            if(ev.type =='mouseup'){                
-                this.img_update();
+            if(ev.type =='mouseup'){  
+                debugger    
+                if(!this.tool.name){
+                    this.img_update();
+                }        
+                
             }
             if(ev.type =='mousedown'){
                 ev.preventDefault ? ev.preventDefault() : ev.returnValue = false
@@ -153,12 +175,11 @@ export default class DrawingCore{
     cUndo() {   
         if (this.cStep > 0) {
             this.cStep--;
-            var canvasPic = new Image();
-            canvasPic.src = this.cPushArray[this.cStep];
-            canvasPic.onload = () => {
+            this.canvasPic.src = this.cPushArray[this.cStep];
+            this.canvasPic.onload = () => {
                 this.contexto.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.contexto.drawImage(canvasPic, 0, 0);
+                this.contexto.drawImage(this.canvasPic, 0, 0);
             }
         }        
     }
@@ -166,12 +187,11 @@ export default class DrawingCore{
     cRedo() {
         if (this.cStep < this.cPushArray.length-1) {
             this.cStep++;
-            var canvasPic = new Image();
-            canvasPic.src = this.cPushArray[this.cStep];
-            canvasPic.onload = () => { 
+            this.canvasPic.src = this.cPushArray[this.cStep];
+            this.canvasPic.onload = () => { 
                 this.contexto.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.contexto.drawImage(canvasPic, 0, 0);
+                this.contexto.drawImage(this.canvasPic, 0, 0);
              }
             //document.title = cStep + ":" + cPushArray.length;
         }

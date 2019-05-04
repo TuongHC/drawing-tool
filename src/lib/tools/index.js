@@ -5,3 +5,4 @@ export * from './lineTool';
 export * from './lineArrowTool';
 export * from './textTool';
 export * from './markerTool';
+export * from './cropperTool';

@@ -21,11 +21,11 @@ export class PencilTool{
         };
     
         // This is called when you release the mouse button.
-        this.mouseup = (ev) => {
+        this.mouseup = () => {
             this.started = false;
         };
 
-        this.mouseleave = (ev) => {
+        this.mouseleave = () => {
             this.started = false;
             
         };

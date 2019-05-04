@@ -59,16 +59,10 @@ export default class Menu {
             icon: '<span class="icon-text"></span>',
         },
         {
-            id: 'red',
-            title: 'Red',
-            type: 'color',
-            icon: '<span class="icon-color"><span class="path1"></span><span class="path2"></span></span>'
-        },
-        {
             id: 'blue',
             title: 'Blue',                
             type: 'color',
-            icon: '<input type="color" id="myColor">'
+            value: '<input type="color" value="#ff0000" id="inputColor">'
         },
         {
             id: 'undo',
@@ -87,7 +81,13 @@ export default class Menu {
           title: 'Move',                
           type: 'move',
           icon: '<span class="icon-move" id="icon-move"></span>',
-      }
+        },
+        {
+          id: 'cropper',
+          title: 'cropper',                
+          type: 'tool',
+          icon: '<span class="icon-ellipse"></span>',
+        }
     ];    
     this.ul = document.createElement('ul');   
     this.ul.className = 'drawing-menu';  
@@ -98,7 +98,7 @@ export default class Menu {
         li.className = 'toolSelect';
         let a = document.createElement('a');
         li.appendChild(a);
-        a.innerHTML = item.icon ? item.icon: item.title;
+        a.innerHTML = item.icon ? item.icon: item.value;
         a.className = item.type;
         if(item.draggable){
             a.draggable = true;
