@@ -6,8 +6,7 @@ import {
     LineArrowTool,
     LineTool,
     EllipseTool,
-    TextTool,
-    CropperTool,
+    TextTool
 } from '../tools';
 import Menu from '../menu/menu'
 export default class DrawingCore {
@@ -22,10 +21,9 @@ export default class DrawingCore {
             line: LineTool,
             lineArrow: LineArrowTool,
             ellipse: EllipseTool,
-            text: TextTool,
-            cropper: CropperTool,
+            text: TextTool
         };
-        this.tool_default = 'cropper';
+        this.tool_default = 'pencil';
         this.cPushArray = new Array();
         this.cStep = -1;
         this.strokeStyle = '#ff0000';
@@ -39,6 +37,7 @@ export default class DrawingCore {
         menu.creareMenu();
         this.handleMenuClick();
         this.handleColorChange();
+        this.createDropArea();
         
     }
 
@@ -140,10 +139,7 @@ export default class DrawingCore {
         var func = this.tool ? this.tool[ev.type] : null;
         if (func) {
             if(ev.type =='mouseup'){  
-                debugger    
-                if(!this.tool.name){
-                    this.img_update();
-                }        
+                this.updateImage();
                 
             }
             if(ev.type =='mousedown'){
@@ -153,7 +149,7 @@ export default class DrawingCore {
         }
     }
 
-    img_update () {
+    updateImage () {
         this.contexto.drawImage(this.canvas, 0, 0);
         this.cPush();
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

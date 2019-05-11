@@ -13,7 +13,7 @@ export class TextTool{
                 var lineHeight = 14;               
                 this.context.clearRect(0,0,core.canvas.width, core.canvas.height);
                 this.drawText(this.context, this.textValue, this.lastX + 4, this.lastY + 16, lineHeight, core.strokeStyle);
-                core.img_update();
+                core.updateImage();
                 this.textValue = "";
             }            
 
@@ -116,7 +116,7 @@ export class TextTool{
                   let y = insertText.offsetTop;
                   let x = insertText.offsetLeft;
                   this.drawText(this.context, insertText.value, x + 4, y + 16, lineHeight, core.strokeStyle);
-                  core.img_update();
+                  core.updateImage();
                   insertText.value = "";
                 }
                 insertText.parentNode.removeChild(insertText);
