@@ -1,0 +1,32 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>User Application</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <div id="controllers">
+            <button class="controller" id="undo">undo</button>  
+            <button class="controller" id="redo">redo</button>
+            <button class="controller" id="pencil">pencil</button>
+          </div>
+
+        <!-- plugin initialization -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                // create instance of a plugin
+                var elem = document.getElementById('app');
+                var instance = new DrawingTool(elem, {
+                    width: 1024,
+                    height: 600
+                });
+                // initialize
+                // instance.init();
+                // add new users
+            
+            });
+        </script>
+    </body>
+</html>

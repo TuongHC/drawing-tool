@@ -1,0 +1,50 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>User Application</title>
+
+        <style>
+            html,body{
+                margin: 0;
+                padding: 0;
+                font-size: 14px;
+                font-family: sans-serif;
+                color: #111;
+                background-color: #eee;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+          .modal {
+            padding: 18px;
+            position: absolute;
+            border: 1px solid lightgrey;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Croppr.js</h1>
+        <div class="modal">
+            <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+        </div>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+
+                var croppr = new drawingTool('#cropper', {
+                onInitialize: (instance) => { console.log(instance); },
+                onCropStart: (data) => { console.log('start', data); },
+                onCropEnd: (data) => { console.log('end', data); },
+                onCropMove: (data) => { console.log('move', data); }
+            });
+
+                
+            });
+        </script>
+    <script type="text/javascript" src="./index.js"></script></body>
+</html>
